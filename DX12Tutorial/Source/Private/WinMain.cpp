@@ -1,13 +1,29 @@
-#include "Windows.h"
+#include "pch\pch.h"
 
 #define MAX_NAME_STRING 256
 #define HInstance() GetModuleHandle(NULL)
+
+#define EXIT_SUCCESS 0
 
 WCHAR WindowClass[MAX_NAME_STRING];
 WCHAR WindowTitle[MAX_NAME_STRING];
 
 INT WindowWidth;
 INT WindowHeight;
+
+
+LRESULT CALLBACK WindowProcess(HWND hWnd, UINT message, WPARAM wparam, LPARAM lparam)
+{
+    switch (message)
+    {
+        case WM_DESTROY:
+            PostQuitMessage(EXIT_SUCCESS);
+            break;
+    }
+
+    return DefWindowProc(hWnd, message, wparam, lparam);
+}
+
 
 int CALLBACK WinMain(HINSTANCE, HINSTANCE, LPSTR, INT)
 {
@@ -37,8 +53,11 @@ int CALLBACK WinMain(HINSTANCE, HINSTANCE, LPSTR, INT)
 
     wcex.hInstance = HInstance();
 
-    wcex.lpfnWndProc = DefWindowProc;
+    // Defines default behaviour for window - program will run even after closing window
+    //wcex.lpfnWndProc = DefWindowProc;
 
+    wcex.lpfnWndProc = WindowProcess;
+    
     RegisterClassEx(&wcex);
 
     // Create and display window
